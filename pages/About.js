@@ -1,6 +1,6 @@
 export default function About() {
   return(
-    <div>
+    <div className="page-wrapper">
     <h1>About Team Motivaze+1</h1>
   <p>We are computer science students building GameTracker, a game library where players track their backlog and write reviews.
     </p>
