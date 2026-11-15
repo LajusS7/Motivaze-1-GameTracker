@@ -1,16 +1,23 @@
-
 import { useState, useEffect } from "react";
 
 function Catalog() {
-
     const [games, setGames] = useState([]);
     const [search, setSearch] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         async function loadGames() {
-            const res = await fetch("https://api.rawg.io/api/games?key=fd338b93143d45a3bca11baec9a3124e");
-            const data = await res.json();
-            setGames(data.results);
+            try {
+                const res = await fetch("http://localhost:3001/api/games");
+                if (!res.ok) throw new Error("Request failed: " + res.status);
+                const data = await res.json();
+                setGames(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
         }
         loadGames();
     }, []);
@@ -31,6 +38,9 @@ function Catalog() {
                 onChange={(e) => setSearch(e.target.value)}
             />
 
+            {loading && <p>Loading games...</p>}
+            {error && <p>Error: {error}</p>}
+
             {filteredGames.map((g) => (
                 <p key={g.id}>{g.name}</p>
             ))}
@@ -39,4 +49,3 @@ function Catalog() {
 }
 
 export default Catalog;
-
