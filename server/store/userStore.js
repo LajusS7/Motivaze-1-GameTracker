@@ -1,16 +1,42 @@
-// TEMPORARY 
-
-const users = [];
-let nextId = 1;
+const { getDatabase } = require("../config/db");
 
 async function findByUsername(username) {
-  return users.find((u) => u.username.toLowerCase() === username.toLowerCase()) || null;
+  const db = getDatabase();
+
+  const user = await db.collection("users").findOne({
+    usernameLower: username.toLowerCase()
+  });
+  
+  if (!user) {
+    return null;
+  }
+  return {
+    id: user._id.toString(),
+    username: user.username,
+    passwordHash: user.passwordHash
+  };
 }
 
 async function createUser({ username, passwordHash }) {
-  const user = { id: String(nextId++), username, passwordHash };
-  users.push(user);
-  return user;
+  const db = getDatabase();
+
+  const user = {
+    username,
+    usernameLower: username.toLowerCase(),
+    passwordHash,
+    createdAt: new Date()
+  };
+
+  const result = await db.collection("users").insertOne(user);
+
+  return {
+    id: result.insertedId.toString(),
+    username: user.username,
+    passwordHash: user.passwordHash
+  };
 }
 
-module.exports = { findByUsername, createUser };
+module.exports = {
+  findByUsername,
+  createUser
+};
