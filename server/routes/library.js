@@ -8,7 +8,8 @@ const router = express.Router();
 const VALID_STATUSES = [
     "Want to Play",
     "Playing",
-    "Completed"
+    "Completed",
+    "Dropped"
 ];
 
 // GET: get user library

@@ -126,6 +126,9 @@ function Dashboard() {
                                         <option value="Completed">
                                             Completed
                                         </option>
+                                        <option value="Dropped">
+                                            Dropped
+                                        </option>
                                     </select>
                                 </label>
 
