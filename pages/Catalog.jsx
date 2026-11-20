@@ -21,6 +21,10 @@ function Catalog() {
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [submittingReview, setSubmittingReview] = useState(false);
 
+    const [newGameName, setNewGameName] = useState("");
+    const [addingNewGame, setAddingNewGame] = useState(false);
+    const [addGameMessage, setAddGameMessage] = useState("");
+
     useEffect(() => {
         async function loadGames() {
             try {
@@ -45,6 +49,7 @@ function Catalog() {
                 console.error("Could not load library:", err.message);
             }
         }
+
         loadGames();
         loadLibrary();
     }, []);
@@ -86,7 +91,7 @@ function Catalog() {
         }
     }
 
-async function showReviews(game) {
+    async function showReviews(game) {
         if (selectedGame?.id === game.id) {
             setSelectedGame(null);
             setReviews([]);
@@ -212,7 +217,43 @@ async function showReviews(game) {
             setReviewMessage("Could not delete review: " + err.message);
         }
     }
-    
+
+    async function addNewGame(e) {
+        e.preventDefault();
+        setAddGameMessage("");
+
+        if (!newGameName.trim()) {
+            setAddGameMessage("Enter Game Name");
+            return;
+        }
+
+        if (games.some((g) =>
+            g.name.toLowerCase() === newGameName.trim().toLowerCase()
+        )) {
+            setAddGameMessage("Game Already Exists In Catalog");
+            return;
+        }
+
+        setAddingNewGame(true);
+
+        try {
+            const newGame = await api("/api/games", {
+                method: "POST",
+                body: {
+                    name: newGameName.trim()
+                }
+            });
+
+            setGames((previous) => [...previous, newGame]);
+            setNewGameName("");
+            setAddGameMessage("Game Added Successfully!");
+        } catch (err) {
+            setAddGameMessage("Game Adding Failed: " + err.message);
+        } finally {
+            setAddingNewGame(false);
+        }
+    }
+
     return (
         <div className="page-wrapper">
             <h1>Game Catalog</h1>
@@ -225,120 +266,137 @@ async function showReviews(game) {
                 onChange={(e) => setSearch(e.target.value)}
             />
 
+            <h3>Can't find a game?</h3>
+
+            <form onSubmit={addNewGame}>
+                <input
+                    type="text"
+                    placeholder="Enter Game Name"
+                    value={newGameName}
+                    onChange={(e) => setNewGameName(e.target.value)}
+                />
+
+                <button type="submit" disabled={addingNewGame}>
+                    {addingNewGame ? "Adding..." : "Add Game"}
+                </button>
+            </form>
+
+            {addGameMessage && <p>{addGameMessage}</p>}
+
             {loading && <p>Loading games...</p>}
             {error && <p>Error: {error}</p>}
             {message && <p>{message}</p>}
 
             {filteredGames.map((g) => (
-            <div key={g.id}>
-                <p>{g.name}</p>
+                <div key={g.id}>
+                    <p>{g.name}</p>
 
-                <button
-                    onClick={() => addToLibrary(g)}
-                    disabled={
-                        libraryGameIds.includes(g.id) ||
-                        addingGameId === g.id
-                    }
-                >
-                    {libraryGameIds.includes(g.id)
-                        ? "Already in Library"
-                        : addingGameId === g.id
-                            ? "Adding..."
-                            : "Add to Library"}
-                </button>
+                    <button
+                        onClick={() => addToLibrary(g)}
+                        disabled={
+                            libraryGameIds.includes(g.id) ||
+                            addingGameId === g.id
+                        }
+                    >
+                        {libraryGameIds.includes(g.id)
+                            ? "Already in Library"
+                            : addingGameId === g.id
+                                ? "Adding..."
+                                : "Add to Library"}
+                    </button>
 
-                {" "}
+                    {" "}
 
-                <button onClick={() => showReviews(g)}>
-                    {selectedGame?.id === g.id
-                        ? "Hide Reviews"
-                        : "View Reviews"}
-                </button>
+                    <button onClick={() => showReviews(g)}>
+                        {selectedGame?.id === g.id
+                            ? "Hide Reviews"
+                            : "View Reviews"}
+                    </button>
 
-                {selectedGame?.id === g.id && (
-                    <div>
-                        <h3>Reviews for {g.name}</h3>
+                    {selectedGame?.id === g.id && (
+                        <div>
+                            <h3>Reviews for {g.name}</h3>
 
-                        {reviewLoading && <p>Loading reviews...</p>}
-                        {reviewMessage && <p>{reviewMessage}</p>}
+                            {reviewLoading && <p>Loading reviews...</p>}
+                            {reviewMessage && <p>{reviewMessage}</p>}
 
-                        {!reviewLoading && reviews.length === 0 && (
-                            <p>No reviews yet. Be the first to review this game!</p>
-                        )}
-
-                        {reviews.map((review) => (
-                            <div key={review._id}>
-                                <h4>{review.username || "GameTracker user"}</h4>
-                                <p>Rating: {review.rating}/5</p>
-                                <p>{review.reviewText}</p>
-
-                                {review.isOwner && (
-                                    <div>
-                                        <button onClick={() => editReview(review)}>
-                                            Edit Review
-                                        </button>
-
-                                        {" "}
-
-                                        <button onClick={() => deleteReview(review._id)}>
-                                            Delete Review
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-
-                        <hr />
-
-                        <h3>
-                            {editingReviewId ? "Edit Your Review" : "Write a Review"}
-                        </h3>
-
-                        <form onSubmit={submitReview}>
-                            <label>
-                                Rating:{" "}
-                                <select
-                                    value={rating}
-                                    onChange={(e) => setRating(e.target.value)}
-                                >
-                                    <option value="5">5 - Excellent</option>
-                                    <option value="4">4 - Great</option>
-                                    <option value="3">3 - Average</option>
-                                    <option value="2">2 - Poor</option>
-                                    <option value="1">1 - Terrible</option>
-                                </select>
-                            </label>
-
-                            <p>
-                                <textarea
-                                    placeholder="Write your review..."
-                                    value={reviewText}
-                                    onChange={(e) => setReviewText(e.target.value)}
-                                    rows="4"
-                                    required
-                                />
-                            </p>
-
-                            <button type="submit" disabled={submittingReview}>
-                                {submittingReview
-                                    ? "Saving..."
-                                    : editingReviewId
-                                        ? "Save Changes"
-                                        : "Submit Review"}
-                            </button>
-
-                            {editingReviewId && (
-                                <button type="button" onClick={cancelEdit}>
-                                    Cancel
-                                </button>
+                            {!reviewLoading && reviews.length === 0 && (
+                                <p>No reviews yet. Be the first to review this game!</p>
                             )}
-                        </form>
-                    </div>
-                )}
 
-                <hr />
-            </div>
-        ))}
+                            {reviews.map((review) => (
+                                <div key={review._id}>
+                                    <h4>{review.username || "GameTracker user"}</h4>
+                                    <p>Rating: {review.rating}/5</p>
+                                    <p>{review.reviewText}</p>
+
+                                    {review.isOwner && (
+                                        <div>
+                                            <button onClick={() => editReview(review)}>
+                                                Edit Review
+                                            </button>
+
+                                            {" "}
+
+                                            <button onClick={() => deleteReview(review._id)}>
+                                                Delete Review
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+
+                            <hr />
+
+                            <h3>
+                                {editingReviewId ? "Edit Your Review" : "Write a Review"}
+                            </h3>
+
+                            <form onSubmit={submitReview}>
+                                <label>
+                                    Rating:{" "}
+                                    <select
+                                        value={rating}
+                                        onChange={(e) => setRating(e.target.value)}
+                                    >
+                                        <option value="5">5 - Excellent</option>
+                                        <option value="4">4 - Great</option>
+                                        <option value="3">3 - Average</option>
+                                        <option value="2">2 - Poor</option>
+                                        <option value="1">1 - Terrible</option>
+                                    </select>
+                                </label>
+
+                                <p>
+                                    <textarea
+                                        placeholder="Write your review..."
+                                        value={reviewText}
+                                        onChange={(e) => setReviewText(e.target.value)}
+                                        rows="4"
+                                        required
+                                    />
+                                </p>
+
+                                <button type="submit" disabled={submittingReview}>
+                                    {submittingReview
+                                        ? "Saving..."
+                                        : editingReviewId
+                                            ? "Save Changes"
+                                            : "Submit Review"}
+                                </button>
+
+                                {editingReviewId && (
+                                    <button type="button" onClick={cancelEdit}>
+                                        Cancel
+                                    </button>
+                                )}
+                            </form>
+                        </div>
+                    )}
+
+                    <hr />
+                </div>
+            ))}
         </div>
     );
 }
