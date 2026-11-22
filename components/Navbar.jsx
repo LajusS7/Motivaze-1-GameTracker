@@ -9,7 +9,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <h2>Team Workspace</h2>
+      <h2>Game Tracker</h2>
 
       <div className="nav-links">
         <NavLink to="/">Home</NavLink>
