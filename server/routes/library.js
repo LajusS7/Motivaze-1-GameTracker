@@ -43,6 +43,8 @@ router.post("/", async (req, res) => {
         const gameName = String(req.body?.gameName || "").trim();
         const gameImage = String(req.body?.gameImage || "");
         const status = req.body?.status || "Want to Play";
+        const platform = req.body?.platform || "Select Platform";
+        const hours = req.body?.hours || 0;
 
         if (!Number.isInteger(gameId) || gameId === 0) {
             return res.status(400).json({ message: "A valid game ID is required." });
@@ -71,6 +73,8 @@ router.post("/", async (req, res) => {
             gameName,
             gameImage,
             status,
+            platform,
+            hours,
             addedAt: new Date(),
             updatedAt: new Date()
         };
@@ -93,6 +97,8 @@ router.put("/:id", async (req, res) => {
         const db = getDatabase();
         const id = req.params.id;
         const status = req.body?.status;
+        const platform = req.body?.platform;
+        const hours = req.body?.hours;
 
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid library entry ID." });
@@ -101,7 +107,7 @@ router.put("/:id", async (req, res) => {
         if (!VALID_STATUSES.includes(status)) {
             return res.status(400).json({ message: "Invalid game status." });
         }
-
+        
         const result = await db.collection("libraryEntries").updateOne(
             {
                 _id: new ObjectId(id),
@@ -110,6 +116,8 @@ router.put("/:id", async (req, res) => {
             {
                 $set: {
                     status,
+                    platform,
+                    hours: Number(hours),
                     updatedAt: new Date()
                 }
             }
