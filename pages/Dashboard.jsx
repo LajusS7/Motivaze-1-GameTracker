@@ -77,7 +77,7 @@ function Dashboard() {
 
     return (
         <div className="page-wrapper">
-            <h1>Workspace Dashboard</h1>
+            <h1>Dashboard</h1>
             <p className="lead">Welcome back, {user?.username}.</p>
 
             {loading && <p className="notice">Loading dashboard...</p>}
