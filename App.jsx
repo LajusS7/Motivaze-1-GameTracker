@@ -1,4 +1,5 @@
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -12,6 +13,7 @@ import Catalog from "./pages/Catalog.jsx";
 
 function App() {
     return (
+<ThemeProvider>
 <BrowserRouter>
     <AuthProvider>
         <Navbar />
@@ -33,6 +35,7 @@ function App() {
         </Routes>
     </AuthProvider>
 </BrowserRouter>
+</ThemeProvider>
     );
 }
 

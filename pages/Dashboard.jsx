@@ -78,75 +78,80 @@ function Dashboard() {
     return (
         <div className="page-wrapper">
             <h1>Workspace Dashboard</h1>
-            <p>Welcome back, {user?.username}.</p>
+            <p className="lead">Welcome back, {user?.username}.</p>
 
-            {loading && <p>Loading dashboard...</p>}
-            {error && <p role="alert">Error: {error}</p>}
-            {message && <p>{message}</p>}
-            {actionMessage && <p>{actionMessage}</p>}
+            {loading && <p className="notice">Loading dashboard...</p>}
+            {error && <p className="notice error" role="alert">Error: {error}</p>}
+            {message && <p className="notice">{message}</p>}
+            {actionMessage && <p className="notice success">{actionMessage}</p>}
 
             {!loading && (
-                <div>
-                    <h2>My Game Library</h2>
-
-                    <p>Total Games: {games.length}</p>
+                <section>
+                    <div className="section-head">
+                        <h2>My Game Library</h2>
+                        <span className="chip">Total Games: {games.length}</span>
+                    </div>
 
                     {games.length === 0 ? (
-                        <p>Your library is empty. Visit the Catalog to add games!</p>
+                        <p className="notice">
+                            Your library is empty. Visit the Catalog to add games!
+                        </p>
                     ) : (
-                        games.map((game) => (
-                            <div key={game._id}>
-                                {game.gameImage && (
-                                    <img
-                                        src={game.gameImage}
-                                        alt={game.gameName}
-                                        width="150"
-                                    />
-                                )}
+                        <div className="library-grid">
+                            {games.map((game) => (
+                                <article className="card library-card" key={game._id}>
+                                    {game.gameImage && (
+                                        <img
+                                            className="library-img"
+                                            src={game.gameImage}
+                                            alt={game.gameName}
+                                        />
+                                    )}
 
-                                <h3>{game.gameName}</h3>
+                                    <div className="library-body">
+                                        <h3>{game.gameName}</h3>
 
-                                <label>
-                                    Status:{" "}
-                                    <select
-                                        value={game.status}
-                                        onChange={(e) =>
-                                            updateStatus(
-                                                game._id,
-                                                e.target.value
-                                            )
-                                        }
-                                    >
-                                        <option value="Want to Play">
-                                            Want to Play
-                                        </option>
-                                        <option value="Playing">
-                                            Playing
-                                        </option>
-                                        <option value="Completed">
-                                            Completed
-                                        </option>
-                                        <option value="Dropped">
-                                            Dropped
-                                        </option>
-                                    </select>
-                                </label>
+                                        <label className="field-label">
+                                            Status
+                                            <select
+                                                value={game.status}
+                                                onChange={(e) =>
+                                                    updateStatus(
+                                                        game._id,
+                                                        e.target.value
+                                                    )
+                                                }
+                                            >
+                                                <option value="Want to Play">
+                                                    Want to Play
+                                                </option>
+                                                <option value="Playing">
+                                                    Playing
+                                                </option>
+                                                <option value="Completed">
+                                                    Completed
+                                                </option>
+                                                <option value="Dropped">
+                                                    Dropped
+                                                </option>
+                                            </select>
+                                        </label>
 
-                                <p>
-                                    <button
-                                        onClick={() => removeGame(game._id)}
-                                    >
-                                        Remove from Library
-                                    </button>
-                                </p>
-                            </div>
-                        ))
+                                        <button
+                                            className="btn-danger"
+                                            onClick={() => removeGame(game._id)}
+                                        >
+                                            Remove from Library
+                                        </button>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
                     )}
-                </div>
+                </section>
             )}
         </div>
     );
 }
 
 export default Dashboard;
-

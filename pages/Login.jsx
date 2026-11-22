@@ -34,11 +34,11 @@ function Login() {
   }
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper narrow">
       <h1>Log in</h1>
       <p>Log in to see your dashboard and manage your backlog.</p>
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form className="card auth-form" onSubmit={handleSubmit} noValidate>
         <label htmlFor="username">Username</label>
         <input
           id="username"
@@ -60,7 +60,7 @@ function Login() {
         />
 
         {error && (
-          <p role="alert">
+          <p className="notice error" role="alert">
             {error}
           </p>
         )}
@@ -70,7 +70,7 @@ function Login() {
         </button>
       </form>
 
-      <p>
+      <p className="auth-switch">
         No account yet? <Link to="/register">Create one</Link>
       </p>
     </div>

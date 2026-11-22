@@ -1,14 +1,11 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
+import ProfileMenu from "./ProfileMenu.jsx";
 
 function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logout();
-    navigate("/login");
-  }
+  const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="navbar">
@@ -21,16 +18,18 @@ function Navbar() {
         <NavLink to="/catalog">Catalog</NavLink>
 
         {user ? (
-          <>
-            <span>{user.username}</span>
-            <button type="button" onClick={handleLogout}>
-              Log out
-            </button>
-          </>
+          <ProfileMenu />
         ) : (
           <>
             <NavLink to="/login">Log in</NavLink>
             <NavLink to="/register">Register</NavLink>
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+            >
+              {theme === "dark" ? "Light mode" : "Dark mode"}
+            </button>
           </>
         )}
       </div>

@@ -257,146 +257,167 @@ function Catalog() {
     return (
         <div className="page-wrapper">
             <h1>Game Catalog</h1>
-            <p>Browse and search for games.</p>
+            <p className="lead">Browse and search for games.</p>
 
             <input
+                className="search-input"
                 type="text"
                 placeholder="Search games..."
+                aria-label="Search games"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
             />
 
-            <h3>Can't find a game?</h3>
+            <section className="card add-game">
+                <h3>Can't find a game?</h3>
 
-            <form onSubmit={addNewGame}>
-                <input
-                    type="text"
-                    placeholder="Enter Game Name"
-                    value={newGameName}
-                    onChange={(e) => setNewGameName(e.target.value)}
-                />
+                <form className="inline-form" onSubmit={addNewGame}>
+                    <input
+                        type="text"
+                        placeholder="Enter Game Name"
+                        aria-label="New game name"
+                        value={newGameName}
+                        onChange={(e) => setNewGameName(e.target.value)}
+                    />
 
-                <button type="submit" disabled={addingNewGame}>
-                    {addingNewGame ? "Adding..." : "Add Game"}
-                </button>
-            </form>
-
-            {addGameMessage && <p>{addGameMessage}</p>}
-
-            {loading && <p>Loading games...</p>}
-            {error && <p>Error: {error}</p>}
-            {message && <p>{message}</p>}
-
-            {filteredGames.map((g) => (
-                <div key={g.id}>
-                    <p>{g.name}</p>
-
-                    <button
-                        onClick={() => addToLibrary(g)}
-                        disabled={
-                            libraryGameIds.includes(g.id) ||
-                            addingGameId === g.id
-                        }
-                    >
-                        {libraryGameIds.includes(g.id)
-                            ? "Already in Library"
-                            : addingGameId === g.id
-                                ? "Adding..."
-                                : "Add to Library"}
+                    <button type="submit" disabled={addingNewGame}>
+                        {addingNewGame ? "Adding..." : "Add Game"}
                     </button>
+                </form>
 
-                    {" "}
+                {addGameMessage && <p className="notice">{addGameMessage}</p>}
+            </section>
 
-                    <button onClick={() => showReviews(g)}>
-                        {selectedGame?.id === g.id
-                            ? "Hide Reviews"
-                            : "View Reviews"}
-                    </button>
+            {loading && <p className="notice">Loading games...</p>}
+            {error && <p className="notice error" role="alert">Error: {error}</p>}
+            {message && <p className="notice">{message}</p>}
 
-                    {selectedGame?.id === g.id && (
-                        <div>
-                            <h3>Reviews for {g.name}</h3>
+            <div className="game-list">
+                {filteredGames.map((g) => (
+                    <article className="card game-card" key={g.id}>
+                        <div className="game-row">
+                            <h3 className="game-name">{g.name}</h3>
 
-                            {reviewLoading && <p>Loading reviews...</p>}
-                            {reviewMessage && <p>{reviewMessage}</p>}
+                            <div className="actions">
+                                <button
+                                    onClick={() => addToLibrary(g)}
+                                    disabled={
+                                        libraryGameIds.includes(g.id) ||
+                                        addingGameId === g.id
+                                    }
+                                >
+                                    {libraryGameIds.includes(g.id)
+                                        ? "Already in Library"
+                                        : addingGameId === g.id
+                                            ? "Adding..."
+                                            : "Add to Library"}
+                                </button>
 
-                            {!reviewLoading && reviews.length === 0 && (
-                                <p>No reviews yet. Be the first to review this game!</p>
-                            )}
+                                <button
+                                    className="btn-secondary"
+                                    onClick={() => showReviews(g)}
+                                >
+                                    {selectedGame?.id === g.id
+                                        ? "Hide Reviews"
+                                        : "View Reviews"}
+                                </button>
+                            </div>
+                        </div>
 
-                            {reviews.map((review) => (
-                                <div key={review._id}>
-                                    <h4>{review.username || "GameTracker user"}</h4>
-                                    <p>Rating: {review.rating}/5</p>
-                                    <p>{review.reviewText}</p>
+                        {selectedGame?.id === g.id && (
+                            <div className="reviews">
+                                <h3>Reviews for {g.name}</h3>
 
-                                    {review.isOwner && (
-                                        <div>
-                                            <button onClick={() => editReview(review)}>
-                                                Edit Review
-                                            </button>
+                                {reviewLoading && <p className="notice">Loading reviews...</p>}
+                                {reviewMessage && <p className="notice">{reviewMessage}</p>}
 
-                                            {" "}
+                                {!reviewLoading && reviews.length === 0 && (
+                                    <p className="muted">
+                                        No reviews yet. Be the first to review this game!
+                                    </p>
+                                )}
 
-                                            <button onClick={() => deleteReview(review._id)}>
-                                                Delete Review
-                                            </button>
+                                {reviews.map((review) => (
+                                    <div className="review" key={review._id}>
+                                        <div className="review-head">
+                                            <h4>{review.username || "GameTracker user"}</h4>
+                                            <span className="chip">Rating: {review.rating}/5</span>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                        <p>{review.reviewText}</p>
 
-                            <hr />
+                                        {review.isOwner && (
+                                            <div className="actions">
+                                                <button
+                                                    className="btn-secondary btn-small"
+                                                    onClick={() => editReview(review)}
+                                                >
+                                                    Edit Review
+                                                </button>
 
-                            <h3>
-                                {editingReviewId ? "Edit Your Review" : "Write a Review"}
-                            </h3>
+                                                <button
+                                                    className="btn-danger btn-small"
+                                                    onClick={() => deleteReview(review._id)}
+                                                >
+                                                    Delete Review
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
 
-                            <form onSubmit={submitReview}>
-                                <label>
-                                    Rating:{" "}
-                                    <select
-                                        value={rating}
-                                        onChange={(e) => setRating(e.target.value)}
-                                    >
-                                        <option value="5">5 - Excellent</option>
-                                        <option value="4">4 - Great</option>
-                                        <option value="3">3 - Average</option>
-                                        <option value="2">2 - Poor</option>
-                                        <option value="1">1 - Terrible</option>
-                                    </select>
-                                </label>
+                                <form className="review-form" onSubmit={submitReview}>
+                                    <h3>
+                                        {editingReviewId ? "Edit Your Review" : "Write a Review"}
+                                    </h3>
 
-                                <p>
+                                    <label className="field-label">
+                                        Rating
+                                        <select
+                                            value={rating}
+                                            onChange={(e) => setRating(e.target.value)}
+                                        >
+                                            <option value="5">5 - Excellent</option>
+                                            <option value="4">4 - Great</option>
+                                            <option value="3">3 - Average</option>
+                                            <option value="2">2 - Poor</option>
+                                            <option value="1">1 - Terrible</option>
+                                        </select>
+                                    </label>
+
                                     <textarea
                                         placeholder="Write your review..."
+                                        aria-label="Review text"
                                         value={reviewText}
                                         onChange={(e) => setReviewText(e.target.value)}
                                         rows="4"
                                         required
                                     />
-                                </p>
 
-                                <button type="submit" disabled={submittingReview}>
-                                    {submittingReview
-                                        ? "Saving..."
-                                        : editingReviewId
-                                            ? "Save Changes"
-                                            : "Submit Review"}
-                                </button>
+                                    <div className="actions">
+                                        <button type="submit" disabled={submittingReview}>
+                                            {submittingReview
+                                                ? "Saving..."
+                                                : editingReviewId
+                                                    ? "Save Changes"
+                                                    : "Submit Review"}
+                                        </button>
 
-                                {editingReviewId && (
-                                    <button type="button" onClick={cancelEdit}>
-                                        Cancel
-                                    </button>
-                                )}
-                            </form>
-                        </div>
-                    )}
-
-                    <hr />
-                </div>
-            ))}
+                                        {editingReviewId && (
+                                            <button
+                                                type="button"
+                                                className="btn-secondary"
+                                                onClick={cancelEdit}
+                                            >
+                                                Cancel
+                                            </button>
+                                        )}
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                    </article>
+                ))}
+            </div>
         </div>
     );
 }

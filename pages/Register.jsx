@@ -41,11 +41,11 @@ function Register() {
   }
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper narrow">
       <h1>Create an account</h1>
       <p>Sign up to track your backlog and write reviews.</p>
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form className="card auth-form" onSubmit={handleSubmit} noValidate>
         <label htmlFor="username">Username</label>
         <input
           id="username"
@@ -77,7 +77,7 @@ function Register() {
         />
 
         {error && (
-          <p role="alert">
+          <p className="notice error" role="alert">
             {error}
           </p>
         )}
@@ -87,7 +87,7 @@ function Register() {
         </button>
       </form>
 
-      <p>
+      <p className="auth-switch">
         Already have an account? <Link to="/login">Log in</Link>
       </p>
     </div>
