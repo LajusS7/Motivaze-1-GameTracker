@@ -50,6 +50,50 @@ function Dashboard() {
         }
     }
 
+    async function updatePlatform(id, platform) {
+        setActionMessage("");
+        setError("");
+
+        try {
+            const updatedGame = await api(`/api/library/${id}`, {
+                method: "PUT",
+                body: { platform }
+            });
+
+            setGames((previous) =>
+                previous.map((game) =>
+                    game._id === id ? updatedGame : game
+                )
+            );
+
+            setActionMessage("Platform updated successfully!");
+        } catch (err) {
+            setError(err.message);
+        }
+    }
+
+    async function updateHoursPlayed(id, hoursPlayed) {
+        setActionMessage("");
+        setError("");
+
+        try {
+            const updatedGame = await api(`/api/library/${id}`, {
+                method: "PUT",
+                body: { hoursPlayed }
+            });
+
+            setGames((previous) =>
+                previous.map((game) =>
+                    game._id === id ? updatedGame : game
+                )
+            );
+
+            setActionMessage("Hours played updated successfully!");
+        } catch (err) {
+            setError(err.message);
+        }
+    }
+
     async function removeGame(id) {
         const confirmed = window.confirm(
             "Are you sure you want to remove this game from your library?"
@@ -74,7 +118,6 @@ function Dashboard() {
             setError(err.message);
         }
     }
-
 
     return (
         <div className="page-wrapper">
@@ -105,6 +148,8 @@ function Dashboard() {
                                     game={game}
                                     onUpdateStatus={updateStatus}
                                     onRemoveGame={removeGame}
+                                    onUpdatePlatform={updatePlatform}
+                                    onUpdateHoursPlayed={updateHoursPlayed}
                                 />
                             ))}
                         </div>
