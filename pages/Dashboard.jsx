@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import LibraryGameCard from "../components/LibraryGameCard";
 
 function Dashboard() {
     const { user } = useAuth();
@@ -99,52 +100,12 @@ function Dashboard() {
                     ) : (
                         <div className="library-grid">
                             {games.map((game) => (
-                                <article className="card library-card" key={game._id}>
-                                    {game.gameImage && (
-                                        <img
-                                            className="library-img"
-                                            src={game.gameImage}
-                                            alt={game.gameName}
-                                        />
-                                    )}
-
-                                    <div className="library-body">
-                                        <h3>{game.gameName}</h3>
-
-                                        <label className="field-label">
-                                            Status
-                                            <select
-                                                value={game.status}
-                                                onChange={(e) =>
-                                                    updateStatus(
-                                                        game._id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                            >
-                                                <option value="Want to Play">
-                                                    Want to Play
-                                                </option>
-                                                <option value="Playing">
-                                                    Playing
-                                                </option>
-                                                <option value="Completed">
-                                                    Completed
-                                                </option>
-                                                <option value="Dropped">
-                                                    Dropped
-                                                </option>
-                                            </select>
-                                        </label>
-
-                                        <button
-                                            className="btn-danger"
-                                            onClick={() => removeGame(game._id)}
-                                        >
-                                            Remove from Library
-                                        </button>
-                                    </div>
-                                </article>
+                                <LibraryGameCard
+                                    key={game._id}
+                                    game={game}
+                                    onUpdateStatus={updateStatus}
+                                    onRemoveGame={removeGame}
+                                />
                             ))}
                         </div>
                     )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { api, TOKEN_KEY } from "../lib/api.js";
+import GameCard from "../components/GameCard";
 
 function Catalog() {
     const [games, setGames] = useState([]);
@@ -293,129 +294,29 @@ function Catalog() {
             {message && <p className="notice">{message}</p>}
 
             <div className="game-list">
-                {filteredGames.map((g) => (
-                    <article className="card game-card" key={g.id}>
-                        <div className="game-row">
-                            <h3 className="game-name">{g.name}</h3>
-
-                            <div className="actions">
-                                <button
-                                    onClick={() => addToLibrary(g)}
-                                    disabled={
-                                        libraryGameIds.includes(g.id) ||
-                                        addingGameId === g.id
-                                    }
-                                >
-                                    {libraryGameIds.includes(g.id)
-                                        ? "Already in Library"
-                                        : addingGameId === g.id
-                                            ? "Adding..."
-                                            : "Add to Library"}
-                                </button>
-
-                                <button
-                                    className="btn-secondary"
-                                    onClick={() => showReviews(g)}
-                                >
-                                    {selectedGame?.id === g.id
-                                        ? "Hide Reviews"
-                                        : "View Reviews"}
-                                </button>
-                            </div>
-                        </div>
-
-                        {selectedGame?.id === g.id && (
-                            <div className="reviews">
-                                <h3>Reviews for {g.name}</h3>
-
-                                {reviewLoading && <p className="notice">Loading reviews...</p>}
-                                {reviewMessage && <p className="notice">{reviewMessage}</p>}
-
-                                {!reviewLoading && reviews.length === 0 && (
-                                    <p className="muted">
-                                        No reviews yet. Be the first to review this game!
-                                    </p>
-                                )}
-
-                                {reviews.map((review) => (
-                                    <div className="review" key={review._id}>
-                                        <div className="review-head">
-                                            <h4>{review.username || "GameTracker user"}</h4>
-                                            <span className="chip">Rating: {review.rating}/5</span>
-                                        </div>
-                                        <p>{review.reviewText}</p>
-
-                                        {review.isOwner && (
-                                            <div className="actions">
-                                                <button
-                                                    className="btn-secondary btn-small"
-                                                    onClick={() => editReview(review)}
-                                                >
-                                                    Edit Review
-                                                </button>
-
-                                                <button
-                                                    className="btn-danger btn-small"
-                                                    onClick={() => deleteReview(review._id)}
-                                                >
-                                                    Delete Review
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-
-                                <form className="review-form" onSubmit={submitReview}>
-                                    <h3>
-                                        {editingReviewId ? "Edit Your Review" : "Write a Review"}
-                                    </h3>
-
-                                    <label className="field-label">
-                                        Rating
-                                        <select
-                                            value={rating}
-                                            onChange={(e) => setRating(e.target.value)}
-                                        >
-                                            <option value="5">5 - Excellent</option>
-                                            <option value="4">4 - Great</option>
-                                            <option value="3">3 - Average</option>
-                                            <option value="2">2 - Poor</option>
-                                            <option value="1">1 - Terrible</option>
-                                        </select>
-                                    </label>
-
-                                    <textarea
-                                        placeholder="Write your review..."
-                                        aria-label="Review text"
-                                        value={reviewText}
-                                        onChange={(e) => setReviewText(e.target.value)}
-                                        rows="4"
-                                        required
-                                    />
-
-                                    <div className="actions">
-                                        <button type="submit" disabled={submittingReview}>
-                                            {submittingReview
-                                                ? "Saving..."
-                                                : editingReviewId
-                                                    ? "Save Changes"
-                                                    : "Submit Review"}
-                                        </button>
-
-                                        {editingReviewId && (
-                                            <button
-                                                type="button"
-                                                className="btn-secondary"
-                                                onClick={cancelEdit}
-                                            >
-                                                Cancel
-                                            </button>
-                                        )}
-                                    </div>
-                                </form>
-                            </div>
-                        )}
-                    </article>
+                {filteredGames.map((game) => (
+                    <GameCard
+                        key={game.id}
+                        game={game}
+                        inLibrary={libraryGameIds.includes(game.id)}
+                        adding={addingGameId === game.id}
+                        onAddToLibrary={() => addToLibrary(game)}
+                        isSelected={selectedGame?.id === game.id}
+                        onToggleReviews={() => showReviews(game)}
+                        reviews={reviews}
+                        reviewLoading={reviewLoading}
+                        reviewMessage={reviewMessage}
+                        rating={rating}
+                        setRating={setRating}
+                        reviewText={reviewText}
+                        setReviewText={setReviewText}
+                        editingReviewId={editingReviewId}
+                        submittingReview={submittingReview}
+                        onSubmitReview={submitReview}
+                        onEditReview={editReview}
+                        onDeleteReview={deleteReview}
+                        onCancelEdit={cancelEdit}
+                    />
                 ))}
             </div>
         </div>
