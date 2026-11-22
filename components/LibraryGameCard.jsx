@@ -1,5 +1,5 @@
 
-function LibraryGameCard({ game, onUpdateStatus, onRemoveGame }) {
+function LibraryGameCard({ game, onUpdateStatus, onRemoveGame, onUpdatePlatform, onUpdateHoursPlayed }) {
     return (
         <article className="card library-card">
             {game.gameImage && (
@@ -28,6 +28,34 @@ function LibraryGameCard({ game, onUpdateStatus, onRemoveGame }) {
                     </select>
                 </label>
 
+                <label className="field-label">
+                    Platform
+                    <select
+                        value={game.platform}
+                        onChange={(e) =>
+                            onUpdatePlatform(game._id, e.target.value)
+                        }
+                    >
+                        <option value="Select Platform">Select Platform</option>
+                        <option value="PC">PC</option>
+                        <option value="Xbox">Xbox</option>
+                        <option value="PlayStation">PlayStation</option>
+                        <option value="Nintendo Switch">Nintendo Switch</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </label>
+
+                <label className="field-label">
+                    Hours Played
+                    <input
+                        type="number"
+                        value={game.hoursPlayed || 0}
+                        onChange={(e) =>
+                            onUpdateHoursPlayed(game._id, e.target.value)
+                        }
+                    />
+                </label>
+                
                 <button
                     type="button"
                     className="btn-danger"
