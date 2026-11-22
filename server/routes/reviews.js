@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
         const rating = Number(req.body?.rating);
         const reviewText = String(req.body?.reviewText || "").trim();
 
-        if (!Number.isInteger(gameId) || gameId <= 0) {
+        if (!Number.isInteger(gameId) || gameId === 0) {
             return res.status(400).json({ message: "A valid game ID is required." });
         }
 
@@ -70,7 +70,7 @@ router.get("/game/:gameId", async (req, res) => {
         const db = getDatabase();
         const gameId = Number(req.params.gameId);
 
-        if (!Number.isInteger(gameId) || gameId <= 0) {
+        if (!Number.isInteger(gameId) || gameId === 0) {
             return res.status(400).json({ message: "Invalid game ID." });
         }
 

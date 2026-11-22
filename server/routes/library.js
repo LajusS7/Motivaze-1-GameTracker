@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
         const gameImage = String(req.body?.gameImage || "");
         const status = req.body?.status || "Want to Play";
 
-        if (!Number.isInteger(gameId) || gameId <= 0) {
+        if (!Number.isInteger(gameId) || gameId === 0) {
             return res.status(400).json({ message: "A valid game ID is required." });
         }
 
