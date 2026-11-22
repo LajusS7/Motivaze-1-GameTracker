@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function Home() {
   return (
     <div className="page-wrapper">
-      <h1>Welcome to Team Workspace</h1>
+      <h1>Welcome to Game Tracker</h1>
       <p className="lead">
         Track your backlog, discover new games, and share reviews with other
         players.
