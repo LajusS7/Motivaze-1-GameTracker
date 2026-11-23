@@ -1,12 +1,21 @@
 # Motivaze-1-GameTracker | Full-Stack Game Backlog & Game Review Application
 
-We, Motivaze+1, are working on a game tracker to track backlogs, leave reviews, and potentially many more features.
+We, Motivaze+1, are working on a game tracker to track backlogs, leave reviews, manage game activity, and track the platform and playtime of a game.
+
+## Application Structure Overview
+
+- **Frontend:** React and Vite provide user interface, allowing user to browse games, manage their library, and write reviews. 
+- **Backend:** Node.js and Express handle API requests, user authentication, and application functions.
+- **Database:** MongoDB Atlas stores user accounts, games, library entries, and reviews.
+- **External API:** RAWG Video Game Database provides game information for game catalog (limited catalog only shows first 20 games, plan to scale up to show more games in future).
+- **Authentication:** JSON Web Tokens (JWT) are used to protect routes and user-specific information.
 
 ### Local Installation & Setup
 
 ## Prequesites
 - Node.js
 - MongoDB Atlas instance
+- RAWG API Key
 
 ## Installation
 1. Clone Repository:
